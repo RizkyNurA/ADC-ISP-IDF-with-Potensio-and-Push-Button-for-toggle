@@ -7,6 +7,7 @@
 #include "esp_log.h"
 
 #define Pin_Button 22
+#define Pin_LED 23
 
 static int adc_raw[2][10];
 static int voltage[2][10];
@@ -24,6 +25,9 @@ void GPIO_Initialation(){
     gpio_reset_pin(Pin_Button);
     gpio_set_direction(Pin_Button, GPIO_MODE_INPUT);
     gpio_set_pull_mode(Pin_Button, GPIO_PULLUP_ONLY);
+
+    gpio_reset_pin(Pin_LED);
+    gpio_set_direction(Pin_LED, GPIO_MODE_OUTPUT);
 }
 
 void ADC_Initialation(){
@@ -70,6 +74,7 @@ void TampilkanPembacaanADC(){
             ESP_LOGI("LOG", "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_1 + 1, ADC_CHANNEL_0, voltage[0][0]);
         }
         vTaskDelay(pdMS_TO_TICKS(10));
+
         // ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, ADC_CHANNEL_2, &adc_raw[0][1]));
         // ESP_LOGI("LOG", "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, ADC_CHANNEL_2, adc_raw[0][1]);
         // if (do_calibration1_chan2) {
@@ -86,7 +91,8 @@ void app_main(void)
 
     GPIO_Initialation();
 
-    static int8_t ToggleState = 0;
+    static bool ToggleState = 0;
+    static bool LED_State = 0;
 
     while (1) {
         
@@ -101,9 +107,21 @@ void app_main(void)
         if(ToggleState)
         {
             TampilkanPembacaanADC();
+            
+            if(voltage[0][0] > 1000)
+            {
+                LED_State = 1;
+                gpio_set_level(Pin_LED, LED_State);
+            }
+            else
+            {
+                LED_State = 0;
+                gpio_set_level(Pin_LED, LED_State);
+            }
+            ESP_LOGI("Toggle Condition", "%d", LED_State);
         }
 
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 
