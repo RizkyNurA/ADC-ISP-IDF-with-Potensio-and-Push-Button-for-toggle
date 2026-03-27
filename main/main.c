@@ -23,6 +23,7 @@ void GPIO_Initialation(){
 
     gpio_reset_pin(Pin_Button);
     gpio_set_direction(Pin_Button, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(Pin_Button, GPIO_PULLUP_ONLY);
 }
 
 void ADC_Initialation(){
@@ -44,8 +45,8 @@ void ADC_Initialation(){
     //-------------ADC1 Calibration Init---------------//
     //adc_cali_handle_t adc1_cali_chan0_handle = NULL;
     //adc_cali_handle_t adc1_cali_chan2_handle = NULL;
-    bool do_calibration1_chan0 = example_adc_calibration_init(ADC_UNIT_1, ADC_CHANNEL_0, 3, &adc1_cali_chan0_handle);
-    bool do_calibration1_chan2 = example_adc_calibration_init(ADC_UNIT_1, ADC_CHANNEL_2, 3, &adc1_cali_chan2_handle);
+    do_calibration1_chan0 = example_adc_calibration_init(ADC_UNIT_1, ADC_CHANNEL_0, 3, &adc1_cali_chan0_handle);
+    do_calibration1_chan2 = example_adc_calibration_init(ADC_UNIT_1, ADC_CHANNEL_2, 3, &adc1_cali_chan2_handle);
 }
 
 int button_pressed(int state){
